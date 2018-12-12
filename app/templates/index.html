@@ -1,0 +1,106 @@
+{% load static %}
+<html>
+<head>
+    <title>TO DO TASKS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+          integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet"
+          type="text/css">
+    <link href="{% static '/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+            integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+            crossorigin="anonymous"></script>
+
+</head>
+<body class="bg-warning">
+
+<nav class="navbar navbar-dark bg-dark navbar-expand">
+    <div class="navbar-brand">
+        <a class="h1 text-warning" href="/">TO DO TASKS</a>
+    </div>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+        </ul>
+        <ul class="nav-item dropdown mt-auto mb-auto">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" aria-haspopup="true" data-toggle="dropdown" aria-expanded="false">
+                Options
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'admin:index' %}">Ir a Admin</a>
+                <a class="dropdown-item" href="{% url 'stored' %}">Stored</a>
+                <a class="dropdown-item" href="/">Home</a>
+            </div>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <h1>ADD NEW TASKS</h1>
+    </div>
+    <div class="row justify-content-center">
+        <form action='/posting/' method="POST" style="margin-bottom:auto">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-10">
+                    <input type="text" class="form-control" name="task_text" value="{{ task_text }}">
+                </div>
+                <div class="form-group col-2">
+                    <input class="btn btn-success" type="submit" value="Submit">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% for tk in task %}
+    <div class="row align-items-center" style="margin-bottom: 1rem ">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    {{ tk.creation_date|date:"d/m/Y" }} {{ tk.creation_date|time:"H:i" }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-body">
+                    {{ tk.task_text }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <form action='/delete/' method="POST" style="margin-bottom:auto">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ tk.id }}">
+                <input class="btn btn-danger" type="submit" value="Delete">
+            </form>
+        </div>
+        {% if request.get_full_path == '/' %}
+        <div class="col-md-1">
+            <form action='/storing/' method="POST" style="margin-bottom:auto">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ tk.id }}">
+                <input class="btn btn-secondary" type="submit" value="Store">
+            </form>
+        </div>
+        {% else %}
+        <div class="col-md-1">
+            <form action='/activating/' method="POST" style="margin-bottom:auto">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ tk.id }}">
+                <input class="btn btn-secondary" type="submit" value="Activate">
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>
